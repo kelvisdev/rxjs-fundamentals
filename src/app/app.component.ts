@@ -1,3 +1,4 @@
+import { User } from './models/usuario';
 import { Component, OnInit } from '@angular/core';
 import { Subscriber } from 'rxjs';
 import { Observable, PartialObserver } from 'rxjs';
@@ -47,9 +48,17 @@ export class AppComponent implements OnInit {
       complete: () => console.log('FIM!'),
     };
 
-    const obs = this.runObservable('Kelvis');
-    obs.subscribe(observer);
+    // const obs = this.runObservable('Kelvis');
+    // obs.subscribe(observer);
 
+    const obs = this.userObservable('Admin', 'admin@admin.com');
+    const subs = obs.subscribe(observer);
+
+    setTimeout(() => {
+      subs.unsubscribe();
+      console.log('Conexão fechada: ', subs.closed);
+      
+    }, 3500);
   }
 
   runPromise(name: string): Promise<string> {
@@ -83,4 +92,40 @@ export class AppComponent implements OnInit {
 
     });
   }
+
+  userObservable(name, email): Observable<User> {
+    return new Observable(subscriber => {
+      const nameExpected = 'Admin';
+
+      if (name == nameExpected) {
+        let usuario = new User(name, email);
+
+        setTimeout(() => {
+          subscriber.next(usuario);
+        }, 1000);
+
+        setTimeout(() => {
+          subscriber.next(usuario);
+        }, 2000);
+
+        setTimeout(() => {
+          subscriber.next(usuario);
+        }, 3000);
+
+        setTimeout(() => {
+          subscriber.next(usuario);
+        }, 4000);
+
+        setTimeout(() => {
+          subscriber.complete();
+        }, 5000);
+
+      } else {
+        subscriber.error('Ops! Not found!');
+      }
+
+    });
+  }
 }
+
+
