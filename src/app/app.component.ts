@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Subscriber } from 'rxjs';
+import { Observable, PartialObserver } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -33,12 +34,22 @@ export class AppComponent implements OnInit {
   title = 'RXJS';
 
   ngOnInit(): void {
-    this.runPromise('Kelvis')
-      .then(result => console.log(result))
-      .catch(erro => console.log(erro));
+    // this.runPromise('Kelvis')
+    //   .then(result => console.log(result))
+    //   .catch(erro => console.log(erro));
 
-    this.runObservable('Kelvis')
-      .subscribe(result => console.log(result), error => console.log(error));
+    // this.runObservable('Kelvis')
+    //   .subscribe(result => console.log(result), error => console.log(error));
+
+    const observer = {
+      next: valor => console.log('Next: ', valor),
+      error: erro => console.log('Erro: ', erro),
+      complete: () => console.log('FIM!'),
+    };
+
+    const obs = this.runObservable('Kelvis');
+    obs.subscribe(observer);
+
   }
 
   runPromise(name: string): Promise<string> {
@@ -63,10 +74,11 @@ export class AppComponent implements OnInit {
         subscriber.next('Olá ' + nameExpected);
         subscriber.next('Olá de novo! ' + nameExpected);
         setTimeout(() => {
-          subscriber.next('Resposta com delay! ' + nameExpected);
+          subscriber.next('Reponse with delay! ' + nameExpected);
         }, 5000);
+        subscriber.complete();
       } else {
-        subscriber.error('Ops! Deu erro!');
+        subscriber.error('Ops! Not found!');
       }
 
     });
